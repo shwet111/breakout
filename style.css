@@ -21,3 +21,14 @@ canvas {
     margin: 20px auto;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
+
+.hidden {
+    display: none;
+}
+
+#message {
+    font-size: 24px;
+    font-weight: bold;
+    color: yellow;
+    margin-top: 20px;
+}
