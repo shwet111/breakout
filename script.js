@@ -1,7 +1,6 @@
-/* script.js */
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-canvas.width = 480;
+canvas.width = 490;
 canvas.height = 320;
 
 let ball = { x: canvas.width / 2, y: canvas.height - 30, radius: 10, dx: 2, dy: -2 };
@@ -11,11 +10,18 @@ let leftPressed = false;
 
 const brickRowCount = 5;
 const brickColumnCount = 7;
-const bricks = [];
+const brickWidth = 60;
+const brickHeight = 20;
+const brickPadding = 10;
+const brickOffsetTop = 30;
+const brickOffsetLeft = 30;
+let bricks = [];
+let brickColors = ["red", "blue", "green", "orange", "purple"];
+
 for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0, status: 1 };
+        bricks[c][r] = { x: 0, y: 0, status: 1, color: brickColors[Math.floor(Math.random() * brickColors.length)] };
     }
 }
 
@@ -36,28 +42,34 @@ function drawBricks() {
     for (let c = 0; c < brickColumnCount; c++) {
         for (let r = 0; r < brickRowCount; r++) {
             if (bricks[c][r].status === 1) {
-                let brickX = c * (75 + 10) + 30;
-                let brickY = r * (20 + 10) + 30;
+                let brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                let brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
                 bricks[c][r].x = brickX;
                 bricks[c][r].y = brickY;
-                ctx.fillStyle = "orange";
-                ctx.fillRect(brickX, brickY, 75, 20);
+                ctx.fillStyle = bricks[c][r].color;
+                ctx.fillRect(brickX, brickY, brickWidth, brickHeight);
             }
         }
     }
 }
 
 function collisionDetection() {
+    let allBricksBroken = true;
     for (let c = 0; c < brickColumnCount; c++) {
         for (let r = 0; r < brickRowCount; r++) {
             let b = bricks[c][r];
             if (b.status === 1) {
-                if (ball.x > b.x && ball.x < b.x + 75 && ball.y > b.y && ball.y < b.y + 20) {
+                allBricksBroken = false;
+                if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
                     ball.dy = -ball.dy;
                     b.status = 0;
                 }
             }
         }
+    }
+    if (allBricksBroken) {
+        document.getElementById("message").classList.remove("hidden");
+        cancelAnimationFrame(gameLoop);
     }
 }
 
